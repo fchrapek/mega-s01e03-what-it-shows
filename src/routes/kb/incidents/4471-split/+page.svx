@@ -1,0 +1,62 @@
+---
+layout: runbook
+title: '#4471 · two problems, not one'
+owner: filip chrapek, through his harness
+status: proposed
+reviewed: 2026-11-02
+signature: 'v1.eyJzdWIiOiIxNDgyMiIsImF1ZCI6ImNoYWxsZW5nZTp3aGF0LWl0LXNob3dzIiwiaWF0IjoxNzkzNjQ5MDIwLCJleHAiOjE3OTM3MzU0MjB9.MQGBjq-cd-s_sI_TF6QdrhDt2k-SSw6vh4xlCB6Kygk'
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+  const signature = 'v1.eyJzdWIiOiIxNDgyMiIsImF1ZCI6ImNoYWxsZW5nZTp3aGF0LWl0LXNob3dzIiwiaWF0IjoxNzkzNjQ5MDIwLCJleHAiOjE3OTM3MzU0MjB9.MQGBjq-cd-s_sI_TF6QdrhDt2k-SSw6vh4xlCB6Kygk';
+</script>
+
+The desk merged every report with a matching subject line into #4471 and marked it known: one
+parser bug, one fix queued. The desk's own code disagrees. `causeOf` in `src/lib/kb/causes.ts`
+places a report by its tenant's locale and booking form, and it finds two causes in the ticket.
+
+<Callout kind="warn">
+Not one problem. Two. The queued parser fix leaves the second one open.
+</Callout>
+
+## What #4471 really holds
+
+<CauseTable ticket={4471} />
+
+The table is built from `reports-4471.json` at render time. The export has 427 rows; 15 are the
+same report twice, so 412 reports, as the desk counted. The intake tag is a guess from the
+reporter's browser and is wrong for 38 of them.
+
+## Problem 1 · the shared parser reads dates month first
+
+The parser in sched-prod reads every date month first. Eleven tenants write the day first, so
+7 April goes out as 4 July. This is what the incident page describes, and the queued fix is for it.
+Ticket: [problem 1 of 2](https://github.com/fchrapek/mega-s01e03-what-it-shows/issues/1).
+
+Five of its reports the desk read as a one-day move (`desk-notes.json`). They stay counted by
+tenant, as the table footnotes them.
+
+## Problem 2 · booking-v3 prints the wrong date hint
+
+The booking-v3 form prints `MM/DD/YYYY` under its date field. Three day-first tenants run it
+(alder.physio, copper.studio, pale.harbour). Their people type what the hint says, and the form
+reads it the tenant's way. Every one of these reports came through the form. The parser fix does
+not touch this; the form has to print the tenant's own order.
+Ticket: [problem 2 of 2](https://github.com/fchrapek/mega-s01e03-what-it-shows/issues/2).
+
+## Why the desk missed it
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges on subject alone. Two reports can
+share a subject and have different causes; the dedupe page's explorer already shows the pairs.
+Merging on cause needs the tenant file, which intake never looks up.
+
+## What to do
+
+- Keep the parser fix moving for problem 1.
+- Open the booking-v3 hint as its own fix for problem 2.
+- When the next big ticket comes in, run `CauseTable` on it before marking it known.
+
+<RenderStamp {signature} />
