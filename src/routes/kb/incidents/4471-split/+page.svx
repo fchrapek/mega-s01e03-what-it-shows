@@ -2,7 +2,7 @@
 layout: runbook
 title: '#4471 · two problems, not one'
 owner: filip chrapek, through his harness
-status: proposed
+status: closed
 reviewed: 2026-11-02
 signature: 'v1.eyJzdWIiOiIxNDgyMiIsImF1ZCI6ImNoYWxsZW5nZTp3aGF0LWl0LXNob3dzIiwiaWF0IjoxNzkzNjQ5MDIwLCJleHAiOjE3OTM3MzU0MjB9.MQGBjq-cd-s_sI_TF6QdrhDt2k-SSw6vh4xlCB6Kygk'
 ---
@@ -53,10 +53,15 @@ Ticket: [problem 2 of 2](https://github.com/fchrapek/mega-s01e03-what-it-shows/i
 share a subject and have different causes; the dedupe page's explorer already shows the pairs.
 Merging on cause needs the tenant file, which intake never looks up.
 
-## What to do
+## Outcome
 
-- Keep the parser fix moving for problem 1.
-- Open the booking-v3 hint as its own fix for problem 2.
+The desk closed #4471 on 5 October. Problem 1 is fixed: `fix(dates): parse dd/mm for eu locales`.
+Problem 2 will not be fixed: the booking-v3 form was retired, and the hint went with it. Both
+tickets above are closed with those reasons.
+
+## What to do next time
+
 - When the next big ticket comes in, run `CauseTable` on it before marking it known.
+- Merge on cause, not on subject: that needs the tenant file, which intake never looks up.
 
 <RenderStamp {signature} />
